@@ -54,9 +54,10 @@ class Event:
         NURSE = 3
         DOCTOR = 4
         XRAY = 5
-        LAB = 6
-        SURGERY = 7
-        MEDICATION = 8
+        LAB_ORDER = 6
+        LAB_RESULTS = 7
+        SURGERY = 8
+        MEDICATION = 9
 
     event_type: Type
     key: str
@@ -108,6 +109,16 @@ class Event:
                 self.event_type = self.Type.SURGERY
                 self.key = "Surgery:\n" + value
                 self.color = "#a57620"
+            case "lab_svar":
+                self.event_type = self.Type.LAB_RESULTS
+                self.key = "Lab results"
+                self.color = "#A6D3E2"
+                self.info = Event.parse_test_results(value)
+            case "lab_bestallning":
+                self.event_type = self.Type.LAB_ORDER
+                self.key = "Lab order"
+                self.color = "#93B5C0"
+                self.info = Event.parse_test_order(value)
             case _:
                 self.event_type = self.Type.OTHER
                 self.key = "?\n" + title + value
@@ -115,6 +126,30 @@ class Event:
 
     def __str__(self) -> str:
         return str(self.time) + " " + self.title + " : " + self.value
+
+    @staticmethod
+    def parse_test_results(s: str) -> str:
+        x = json.loads(s)
+        out = ""
+
+        current_discipline = ""
+        for row in x:
+            if row['disciplin_beskrivning'] != current_discipline:
+                current_discipline = row['disciplin_beskrivning']
+                out += "[" + row['disciplin_beskrivning'] + "]\n"
+            out += f"{row['analys_namn']}: {row['varde']}\n"
+        
+        return out
+    @staticmethod
+    def parse_test_order(s: str) -> str:
+        x = json.loads(s)
+        out = ""
+
+        for row in x:
+            out += f"{row['analys_namn']}\n"
+        
+        return out
+
 
     @staticmethod
     def parse_meds(s: str) -> tuple[str, str, int]:
@@ -209,7 +244,7 @@ class EventAggregate:
         for seq_id in self.events.keys():
             if seq_id in other.events.keys():
                 diff = abs(self.events[seq_id].time - other.events[seq_id].time)
-                diffs.append(diff.seconds / 60.0)
+                diffs.append(diff.total_seconds() / 60.0)
 
         return diffs
 

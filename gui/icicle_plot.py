@@ -104,7 +104,7 @@ class Icicle(QWidget):
             if not self.parent_icicle is None:  # cast to icicle
                 data = self.data.get_time_diffs(self.parent_icicle.data)
 
-            self.histogram = HistogramWidget(data, self.icicle_height, 4)
+            self.histogram = HistogramWidget(data, self.icicle_height, 300, 4)
             self.h_layout.insertWidget(0, self.histogram)
         else:
             self.h_layout.removeWidget(self.histogram)
@@ -117,7 +117,7 @@ class Icicle(QWidget):
             if not self.parent_icicle is None:  # cast to icicle
                 data = self.data.get_time_diffs(self.parent_icicle.data)
 
-            self.histogram = HistogramWidget(data, self.icicle_height, 3)
+            self.histogram = HistogramWidget(data, self.icicle_height, 300, 3)
             self.h_layout.insertWidget(0, self.histogram)
         else:
             self.h_layout.removeWidget(self.histogram)

@@ -9,12 +9,14 @@ from PySide6.QtWidgets import (
     QCheckBox,
     QLineEdit,
     QSpinBox,
-    QComboBox,
+    
 )
 from PySide6.QtCore import Qt, QSettings, Signal
 
 import os
 
+from gui.collapsable_widget import HideBox
+from gui.gui_components import NoScrollComboBox
 
 class FilterMenu(QWidget):
 
@@ -24,7 +26,7 @@ class FilterMenu(QWidget):
         super().__init__()
         self.settings = QSettings("InfraVis", "PatientFlow")
         # Header
-        header_group_box = QGroupBox("Data source")
+        header_group_box = QGroupBox("Source")
         self.header_layout = QFormLayout()
         header_group_box.setLayout(self.header_layout)
         self.data_source = QLineEdit()
@@ -58,8 +60,10 @@ class FilterMenu(QWidget):
             lambda x: self.settings.setValue("num_patients", x)
         )
 
-        self.pick_from_cb = QComboBox()
-        self.patient_attributes_cb = QComboBox()
+        self.pick_from_cb = NoScrollComboBox()
+        self.pick_from_cb.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.patient_attributes_cb = NoScrollComboBox()
+        self.patient_attributes_cb.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
         num_patients_layout = QFormLayout()
         num_patients_layout.addRow(QLabel("Num patients"), self.num_patients_spin_box)
@@ -105,9 +109,20 @@ class FilterMenu(QWidget):
         self.main_layout = QVBoxLayout()
         self.main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.setFixedWidth(400)
-        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding)
         self.setLayout(self.main_layout)
         filter_label = QLabel("Data sources")
+
+        # hb_data_source = HideBox("Data source", header_group_box)
+        # hb_files = HideBox("Files", rows_group_box)
+        # hb_which_patients = HideBox("Which patients", num_patients_widget)
+        # hb_display = HideBox("Display", display_group_box)
+        # self.main_layout.addWidget(filter_label)
+        # self.main_layout.addWidget(hb_data_source)
+        # self.main_layout.addWidget(hb_files)
+        # self.main_layout.addWidget(hb_which_patients)
+        # self.main_layout.addWidget(hb_display)
+        # self.main_layout.addWidget(self.generate_plot_button)
 
         self.main_layout.addWidget(filter_label)
         self.main_layout.addWidget(header_group_box)

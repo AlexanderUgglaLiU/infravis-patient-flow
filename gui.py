@@ -5,6 +5,8 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QVBoxLayout,
+    QSizePolicy,
+    QScrollArea,
 )
 from PySide6.QtCore import Qt
 
@@ -22,17 +24,29 @@ class Main(QGroupBox):
         self.window_layout = QHBoxLayout()
         self.window_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.setLayout(self.window_layout)
+        self.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         left_panel_layout = QVBoxLayout()
         left_panel_widget = QWidget()
         left_panel_widget.setLayout(left_panel_layout)
 
         self.filter_menu = FilterMenu()
+        # hb_filter_manu = HideBox("Generating", self.filter_menu)
         left_panel_layout.addWidget(self.filter_menu)
         self.data_display_menu = DataDisplayMenu()
+        # hb_data_display = HideBox("Data display", self.data_display_menu)
         left_panel_layout.addWidget(self.data_display_menu)
 
-        self.window_layout.addWidget(left_panel_widget)
+        scroll_area = QScrollArea(self)
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        scroll_area.setSizePolicy(
+            QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
+        )
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setFixedWidth(450)
+        scroll_area.setWidget(left_panel_widget)
+
+        self.window_layout.addWidget(scroll_area)
 
         self.icicle_plot = QWidget()  # dummy
         self.window_layout.addWidget(self.icicle_plot)

@@ -48,6 +48,6 @@ class DataDisplayMenu(QGroupBox):
             self.histogram = QWidget()
         else:
             data = i1.data.get_time_diffs(i2.data)
-            self.histogram = HistogramWidget(data, 400, 5)
+            self.histogram = HistogramWidget(data, 500, 350, 5)
 
         self.main_layout.addWidget(self.histogram)

@@ -3,9 +3,10 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QSizePolicy,
     QPushButton,
+    QComboBox
 )
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QCursor, QMouseEvent
+from PySide6.QtGui import QCursor, QMouseEvent, QWheelEvent
 
 
 class ColorBox(QPushButton):
@@ -89,3 +90,11 @@ class Selected:
 
     def __del__(self) -> None:
         self.obj.left_box.set_selected(False)
+
+
+class NoScrollComboBox(QComboBox):
+    def wheelEvent(self, event: QWheelEvent):
+        if self.hasFocus():
+            super().wheelEvent(event)
+        else:
+            event.ignore()

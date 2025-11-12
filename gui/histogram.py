@@ -14,15 +14,18 @@ from PySide6.QtCore import Qt
 import math
 
 class HistogramWidget(QWidget):
-    def __init__(self, data, height: int, bins=10, parent=None):
+    def __init__(self, data, height: int = -1, width:int = 300, bins=10, parent=None):
         super().__init__(parent)
 
         # Create a Matplotlib figure and canvas
         self.figure = Figure(figsize=(4, 3), constrained_layout=True)
         self.canvas = FigureCanvas(self.figure)
-        self.setFixedWidth(300)
-        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding)
-        self.setMaximumHeight(500)
+        self.setFixedWidth(width)
+        if height > 0:
+            self.setFixedHeight(height)
+        else:
+            self.setMaximumHeight(500)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         # Create a vertical layout and add the canvas
         layout = QVBoxLayout()
         layout.addWidget(self.canvas)
