@@ -15,7 +15,7 @@ from data import create_aggregate
 from gui.icicle_plot import IciclePlot
 from gui.filter_menu import FilterMenu
 from gui.data_display_menu import DataDisplayMenu
-
+from gui.collapsable_widget import HideBox
 
 class Main(QGroupBox):
 
@@ -28,13 +28,13 @@ class Main(QGroupBox):
 
         left_panel_layout = QVBoxLayout()
         left_panel_widget = QWidget()
+        left_panel_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         left_panel_widget.setLayout(left_panel_layout)
 
         self.filter_menu = FilterMenu()
-        # hb_filter_manu = HideBox("Generating", self.filter_menu)
-        left_panel_layout.addWidget(self.filter_menu)
+        hb_filter_manu = HideBox("Generating", self.filter_menu)
+        left_panel_layout.addWidget(hb_filter_manu)
         self.data_display_menu = DataDisplayMenu()
-        # hb_data_display = HideBox("Data display", self.data_display_menu)
         left_panel_layout.addWidget(self.data_display_menu)
 
         scroll_area = QScrollArea(self)
@@ -43,7 +43,7 @@ class Main(QGroupBox):
             QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
         )
         scroll_area.setWidgetResizable(True)
-        scroll_area.setFixedWidth(450)
+        scroll_area.setFixedWidth(475)
         scroll_area.setWidget(left_panel_widget)
 
         self.window_layout.addWidget(scroll_area)

@@ -63,11 +63,11 @@ class Event:
     key: str
     info : str
     
-    def __init__(self, time: datetime, title: str, value: str) -> None:
+    def __init__(self, time: datetime, title: str, value: str, info:str = "") -> None:
         self.time: datetime = time
         self.title: str = title
         self.value: str = value
-        self.info: str = ""
+        self.info: str = info
         match title:
             case "ankomst":
                 self.event_type = self.Type.ARRIVAL
@@ -241,27 +241,23 @@ class EventAggregate:
 
     def get_time_diffs(self, other: "EventAggregate") -> list[float]:
         diffs: list[float] = []
+        for seq_id in self.get_common_seqids(other):
+            diff = abs(self.events[seq_id].time - other.events[seq_id].time)
+            diffs.append(diff.total_seconds() / 60.0)
+        return diffs
+    
+    def get_common_seqids(self, other: "EventAggregate") -> list[int]:
+        common: list[int] = []
         for seq_id in self.events.keys():
             if seq_id in other.events.keys():
-                diff = abs(self.events[seq_id].time - other.events[seq_id].time)
-                diffs.append(diff.total_seconds() / 60.0)
-
-        return diffs
-
+                common.append(seq_id)
+        return common
 
 class EventTimelineAggregate:
-    aggregate_tree: dict
-    key_counter: dict[str, int]
     event_aggregate_root: EventAggregate
 
     def __init__(self) -> None:
-        self.aggregate_tree = {}
-        self.key_counter = {}
-        self.icd_se = ICD_SE()
         self.event_aggregate_root = EventAggregate("", "")
-
-    def __str__(self) -> str:
-        return json.dumps(self.aggregate_tree, sort_keys=True, indent=2)
 
     def add_event_timeline(self, timeline: EventTimeline):
         current_node = self.event_aggregate_root

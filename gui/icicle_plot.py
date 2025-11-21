@@ -144,7 +144,6 @@ class IciclePlot(QWidget):
         print("Creating IciclePlot")
         super().__init__()
 
-        self.icd_parser = ICD_SE()
 
         self.data = data
         self.row_height = row_height
@@ -192,8 +191,6 @@ class IciclePlot(QWidget):
         self.icicle_selection_signal.emit(i1, i2)
 
     def to_icicle_recursive(self, data: timeline.EventAggregate) -> Icicle:
-        if data.key.startswith(("MD", "BD")):
-            data.info = self.icd_parser.get_title(data.key.removeprefix("MD:\n").removeprefix("BD:\n"))
         icicle = Icicle(data, self.row_height)
         icicle.selected_signal.connect(self._on_icicle_clicked)
         keys: list[str]

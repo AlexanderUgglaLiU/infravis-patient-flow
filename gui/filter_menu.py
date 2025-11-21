@@ -9,7 +9,6 @@ from PySide6.QtWidgets import (
     QCheckBox,
     QLineEdit,
     QSpinBox,
-    
 )
 from PySide6.QtCore import Qt, QSettings, Signal
 
@@ -17,10 +16,12 @@ import os
 
 from gui.collapsable_widget import HideBox
 from gui.gui_components import NoScrollComboBox
+from gui.value_filter import ValueFilter
 
 class FilterMenu(QWidget):
 
     generate_plot_signal = Signal(dict)
+    refresh_signal = Signal(str)  # directory path as argument
 
     def __init__(self):
         super().__init__()
@@ -28,6 +29,7 @@ class FilterMenu(QWidget):
         # Header
         header_group_box = QGroupBox("Source")
         self.header_layout = QFormLayout()
+        self.header_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         header_group_box.setLayout(self.header_layout)
         self.data_source = QLineEdit()
 
@@ -101,15 +103,27 @@ class FilterMenu(QWidget):
         )
 
         display_layout.addRow(QLabel("Group similar events"), self.group_similar_cb)
+        
+        # Filter
+        value_filter_group_box = QGroupBox("Filter")
+        value_filter_layout = QVBoxLayout()
+        self.value_filter = ValueFilter()
+        self.refresh_signal.connect(self.value_filter.update_files)
+        value_filter_group_box.setLayout(value_filter_layout)
+        value_filter_layout.addWidget(self.value_filter)
+
         # Generate
         self.generate_plot_button = QPushButton("Generate plot")
         self.generate_plot_button.clicked.connect(self.generate)
 
         # Main
         self.main_layout = QVBoxLayout()
+        self.main_widget = QWidget()
         self.main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.setFixedWidth(400)
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding)
+
+        # HideBox("Dataset")
         self.setLayout(self.main_layout)
         filter_label = QLabel("Data sources")
 
@@ -129,6 +143,7 @@ class FilterMenu(QWidget):
         self.main_layout.addWidget(rows_group_box)
         self.main_layout.addWidget(num_patients_widget)
         self.main_layout.addWidget(display_group_box)
+        # self.main_layout.addWidget(value_filter_group_box)
         self.main_layout.addWidget(self.generate_plot_button)
         self.refresh()
 
@@ -178,6 +193,7 @@ class FilterMenu(QWidget):
         self.patient_attributes_cb.currentIndexChanged.connect(
             lambda x: self.settings.setValue("patient_attributes", files[x])
         )
+        self.refresh_signal.emit(self.data_source.text())
 
     def generate(self):
         data_paths: list[str] = []

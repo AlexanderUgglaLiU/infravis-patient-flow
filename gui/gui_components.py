@@ -68,7 +68,7 @@ class ColorBox(QPushButton):
         if self.selected_counter > 0:
             border_color = "black"
         else:
-            border_color = "gray"
+            border_color = "rgba(0,0,0,30%)"
 
         self.setStyleSheet(
             f"""
